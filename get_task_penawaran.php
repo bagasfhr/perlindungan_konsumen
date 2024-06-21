@@ -1,13 +1,9 @@
-<?php 
-ini_set('post_max_size', '264M');
-ini_set('upload_max_filesize', '264M');
+<?php
+// ini_set('post_max_size', '264M'); ditaro di file global / php.ini 
+// ini_set('upload_max_filesize', '264M'); ditaro di file global / php.ini
 // ini_set('memory_limit', '296M');
-ini_set('memory_limit', '-1');
-ini_set('max_execution_time', 3000);
-
-// ini_set('display_errors', '1');
-// ini_set('display_startup_errors', '1');
-// error_reporting(E_ALL);
+// ini_set('memory_limit', '-1'); ditaro di file global / php.ini
+// ini_set('max_execution_time', 3000); ditaro di file global / php.ini 
 
 /* config mssql */
 // $server = '10.0.11.142';
@@ -17,46 +13,35 @@ ini_set('max_execution_time', 3000);
 // $username = 'mitusr';  
 // $password = 'WOM@2022';
 
-$server = '10.0.88.8';
-$username = 'CRMUSR';  
-$password = 'Crm@2021';
-$con = mssql_connect($server, $username, $password);
-mssql_select_db( "WISE_STAGING", $con );
+// $server = '10.0.88.8'; ditaro di file global / php.ini 
+// $username = 'CRMUSR';  ditaro di file global / php.ini  
+// $password = 'Crm@2021'; ditaro di file global / php.ini 
+// $con = mssql_connect($server, $username, $password); ditaro di file global / php.ini 
+// mssql_select_db( "WISE_STAGING", $con ); ditaro di file global / php.ini 
 
 
 /* config mysql */ 
-$conf_ip            = "localhost";  
-$conf_user          = "es";
-$conf_passwd        = "0218Galunggung";
-$conf_db              = "db_wom";
+// $conf_ip            = "localhost"; ditaro di file global / php.ini   
+// $conf_user          = "es"; ditaro di file global / php.ini 
+// $conf_passwd        = "0218Galunggung"; ditaro di file global / php.ini 
+// $conf_db              = "db_wom"; ditaro di file global / php.ini 
 
 
-function connectDB() {
-    global $conf_ip, $conf_user, $conf_passwd, $conf_db ;   
-    if (!$connect=mysqli_connect($conf_ip, $conf_user, $conf_passwd, $conf_db)) {
-      $filename = __FILE__;
-      $linename = __LINE__;
+// function connectDB() { ditaro di file global / php.ini 
+    // global $conf_ip, $conf_user, $conf_passwd, $conf_db ;  ditaro di file global / php.ini   
+    // if (!$connect=mysqli_connect($conf_ip, $conf_user, $conf_passwd, $conf_db)) { ditaro di file global / php.ini 
+      //$filename = __FILE__;
+      //$linename = __LINE__;
      // exit();
-    }
-    return $connect;
-}
+    // } ditaro di file global / php.ini 
+    // return $connect; ditaro di file global / php.ini 
+// } ditaro di file global / php.ini 
 
 
-function disconnectDB($db_connect) {
-    mysqli_close($db_connect);
-}
+// function disconnectDB($db_connect) { ditaro di file global / php.ini 
+    // mysqli_close($db_connect); ditaro di file global / php.ini 
+// } ditaro di file global / php.ini 
 
-
-if ($con) {
-    //echo "Koneksi Berhasil !";
-} else {
-    echo "Koneksi gagal !";
-    die(print_r(mssql_error(),true));
-}
-
-echo "Process...";
-echo "<br>";
-echo "<br>";
 $dateexe = DATE("Y-m-d H:i:s");
 $dbopen  = connectDB();
 // $datenow = DATE("Y-m-d");
@@ -72,13 +57,11 @@ $dbopen  = connectDB();
 //    $mss_1 = "select top 2 * from WISE_STAGING..T_MKT_POLO_ELIGIBLE
 // where IS_ACTIVE='1'";
 
-$sqlflag = "UPDATE cc_ts_penawaran_job SET is_eligible_crm=0 WHERE SOURCE_DATA = 'WISE'";
-$resflag = mysqli_query($dbopen,$sqlflag);
+// $sqlflag = "UPDATE cc_ts_penawaran_job SET is_eligible_crm=0 WHERE SOURCE_DATA = 'WISE'";
+// $resflag = mysqli_query($dbopen,$sqlflag);
+$stmt = $dbopen->prepare("UPDATE cc_ts_penawaran_job SET is_eligible_crm=0 WHERE SOURCE_DATA = 'WISE'");
+$stmt->execute();
 
-   // $mss_1 = "select A.* from WISE_STAGING..T_MKT_POLO_ELIGIBLE A
-   //           LEFT JOIN WISE_STAGING..T_MKT_POLO_ORDER_IN B ON A.AGRMNT_NO = B.AGRMNT_NO AND B.POLO_STEP='TASK MVS'
-   //           where A.IS_ACTIVE = '1'
-   //           AND B.AGRMNT_NO IS NULL";//AND A.ASSET_TYPE='MOBIL'
 $mss_1 = "select A.* FROM WISE_STAGING..V_MKT_POLO_ELIGIBLE A WITH(NOLOCK) 
              LEFT JOIN WISE_STAGING..T_MKT_POLO_ORDER_IN B WITH(NOLOCK) ON A.AGRMNT_NO = B.AGRMNT_NO AND B.POLO_STEP IN ('TASK MVS','TASK MSS', 'TASK MSS 2', 'TASK MSS AC',
              'TASK WISE')
@@ -86,10 +69,6 @@ $mss_1 = "select A.* FROM WISE_STAGING..V_MKT_POLO_ELIGIBLE A WITH(NOLOCK)
              AND B.AGRMNT_NO IS NULL";
     $rss_1 = mssql_query($mss_1);
     while($rcs_1 = mssql_fetch_array($rss_1)){
-
-       // echo $rcs_1['T_COLL_TELECOLL_POPULATE_DATA_ID']; echo "<br>";
-      // print_r($rcs_1);echo "<br><br>";
-       // print("<pre>".print_r($rcs_1,true)."</pre>");echo "<br><br>";
 
         $AGRMNT_ID = $rcs_1['AGRMNT_ID']; 
         $AGRMNT_NO = mysqli_real_escape_string($dbopen,$rcs_1['AGRMNT_NO']); 
